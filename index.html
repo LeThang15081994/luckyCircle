@@ -18,7 +18,7 @@
         }
 
         .container {
-            padding: 150px 20px;
+            padding: 100px 20px;
         }
 
         .lottery-container {
@@ -84,14 +84,16 @@
         }
 
         .result {
-            margin-top: 20px;
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.7); /* Nền mờ thay vì trắng */
-            color: #c62828;
-            display: inline-block;
+            margin: 20px auto;
+            font-size: 36px;
+            background: rgba(0, 255, 0, 0.5); /* Nền trong suốt tối nhẹ */
+            color: white;
+            display: none; /* Ẩn mặc định */
             padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng */
+            width: 1200px; /* Chiều rộng khung */
+            text-align: left; /* Canh giữa nội dung */
         }
 
         .fireworks {
@@ -115,7 +117,7 @@
         }
 
         .winners {
-            margin-top: 100px;
+            margin-top: 50px;
             color: white;
             text-align: left;
             background: rgba(0, 0, 0, 0.5);
@@ -141,7 +143,7 @@
         .winner-table-container {
             max-height: 160px; /* Chiều cao tối đa cho bảng */
             overflow-y: auto; /* Bật cuộn dọc */
-            border: 1px solid rgba(255, 255, 255, 0.5); /* Tùy chọn: Viền cho container */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Tùy chọn: Viền cho container */
             background: rgba(0, 0, 0, 0.5); /* Nền trong suốt tối nhẹ */
         }
 
@@ -175,7 +177,7 @@
             <button onclick="spin()">NHẤN QUAY</button>
         </div>
 
-        <div class="result" id="result">Chờ kết quả...</div>
+        <div class="result" id="result" style="display: none;"></div>
 
         <div class="winners">
             <h2>Số lần đã quay: <span id="spinCount">0</span></h2>
@@ -350,6 +352,8 @@
             const duration = 5000; // 50 giây
             const interval = 100; // 0.1 giây mỗi lần đổi số
             let timer;
+            document.getElementById("result").style.display = "none"; // Ẩn kết quả trước khi quay
+            document.getElementById("result").textContent = ""; // Xóa kết quả trước
 
             const startSpinning = () => {
                 timer = setInterval(() => {
@@ -359,8 +363,6 @@
                         imgElement.src = `img/${randomDigit}.png`; // Cập nhật hình ảnh số ngẫu nhiên
                         imgElement.parentElement.classList.remove("bounce"); // Đảm bảo không có hiệu ứng khi quay
                     }
-
-                    document.getElementById("result").textContent = `Đang quay...`; // Hiển thị trạng thái
                 }, interval); // Cập nhật số ngẫu nhiên sau mỗi khoảng thời gian
             };
 
@@ -381,6 +383,7 @@
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+                document.getElementById("result").style.display = "block"; // Hiển thị kết quả
                 document.getElementById("spinCount").textContent = spinCount;
 
                 // Cập nhật bảng danh sách người trúng

@@ -266,8 +266,14 @@
                     }
                 }
 
+                // Giới hạn số lượng pháo giấy
+                if (confetti.length > 200) {
+                    confetti.splice(0, confetti.length - 200);
+                }
+
                 animationRequest = requestAnimationFrame(animate);
             }
+
 
             
             animate();

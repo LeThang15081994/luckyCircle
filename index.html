@@ -70,11 +70,6 @@
             padding: 10px 20px;
             border-radius: 5px;
         }
-
-        .lan-chon {
-            margin: 10px;
-            display: inline-block;
-        }
     </style>
 </head>
 <body>
@@ -110,31 +105,49 @@
             })
             .catch(error => console.error('Lỗi khi tải danh sách nhân viên:', error));
 
-        // Hàm quay số
         function spin() {
             if (employees.length === 0) {
                 alert('Danh sách nhân viên chưa được tải.');
                 return;
             }
-            const randomIndex = Math.floor(Math.random() * employees.length);
-            const employee = employees[randomIndex];
 
-            // Lấy mã số nhân viên và đảm bảo độ dài 9 ký tự
-            let employeeCode = employee["Mã nhân viên"].padStart(9, '0');
+            const duration = 5000; // 5 giây
+            const interval = 100; // 0.1 giây mỗi lần đổi số
+            let timer;
 
-            // Hiển thị từng ký tự lên các ô
-            document.getElementById("num1").textContent = employeeCode.charAt(0);
-            document.getElementById("num2").textContent = employeeCode.charAt(1);
-            document.getElementById("num3").textContent = employeeCode.charAt(2);
-            document.getElementById("num4").textContent = employeeCode.charAt(3);
-            document.getElementById("num5").textContent = employeeCode.charAt(4);
-            document.getElementById("num6").textContent = employeeCode.charAt(5);
-            document.getElementById("num7").textContent = employeeCode.charAt(6);
-            document.getElementById("num8").textContent = employeeCode.charAt(7);
-            document.getElementById("num9").textContent = employeeCode.charAt(8);
+            // Random số liên tục
+            const startSpinning = () => {
+                timer = setInterval(() => {
+                    let randomIndex = Math.floor(Math.random() * employees.length);
+                    let randomEmployee = employees[randomIndex];
+                    let randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
 
-            const result = document.getElementById("result");
-            result.textContent = `Chúc mừng nhân viên: ${employee["Tên nhân viên"]}, mã số: ${employee["Mã nhân viên"]}`;
+                    // Hiển thị từng ký tự lên các ô
+                    for (let i = 0; i < 9; i++) {
+                        document.getElementById(`num${i + 1}`).textContent = randomCode.charAt(i);
+                    }
+
+                    document.getElementById("result").textContent = `Đang quay...`;
+                }, interval);
+            };
+
+            // Dừng quay và chọn kết quả
+            const stopSpinning = () => {
+                clearInterval(timer);
+                let finalIndex = Math.floor(Math.random() * employees.length);
+                let finalEmployee = employees[finalIndex];
+                let finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
+
+                // Hiển thị kết quả cuối cùng
+                for (let i = 0; i < 9; i++) {
+                    document.getElementById(`num${i + 1}`).textContent = finalCode.charAt(i);
+                }
+
+                document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+            };
+
+            startSpinning();
+            setTimeout(stopSpinning, duration);
         }
     </script>
 </body>

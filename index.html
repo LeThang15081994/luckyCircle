@@ -14,10 +14,11 @@
             background-attachment: fixed;
             color: white;
             text-align: center;
+            overflow: hidden;
         }
 
         .container {
-            padding: 20px;
+            padding: 150px 20px;
         }
 
         .lottery-container {
@@ -30,17 +31,33 @@
         .number {
             font-size: 50px;
             font-weight: bold;
-            margin: 5px;
+            margin: 15px;
             padding: 20px;
-            background-color:rgba(255, 255, 255, 0.7); /* Nền mờ thay vì trắng */;
+            background-color:rgba(255, 255, 255, 0.7); /* Nền mờ thay vì trắng */
             color: #c62828;
             border-radius: 10px;
-            width: 80px;
-            height: 100px;
+            width: 120px;
+            height: 180px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .number img {
+            width: 120%; /* Chiều rộng vừa khít ô */
+            height: 130%; /* Chiều cao vừa khít ô */
+            object-fit: contain; /* Đảm bảo hình ảnh không bị méo */
+            animation: bounce 1s infinite; /* Thêm hiệu ứng nhảy */
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .button {
@@ -52,7 +69,7 @@
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            background-color: rgba(0, 255, 0, 0.7); /* Nền mờ thay vì trắng */;
+            background-color: rgba(0, 255, 0, 0.7); /* Nền mờ thay vì trắng */
             color: #c62828;
             cursor: pointer;
             font-weight: bold;
@@ -94,11 +111,11 @@
         }
 
         .winners {
-            margin-top: 20px;
+            margin-top: 100px;
             color: white;
             text-align: left;
             background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
+            padding: 10px 20px;
             border-radius: 10px;
         }
 
@@ -116,21 +133,38 @@
         .winners th {
             background-color: #c62828;
         }
+
+        .winner-table-container {
+            max-height: 160px; /* Chiều cao tối đa cho bảng */
+            overflow-y: auto; /* Bật cuộn dọc */
+            border: 1px solid rgba(255, 255, 255, 0.5); /* Tùy chọn: Viền cho container */
+            background: rgba(0, 0, 0, 0.5); /* Nền trong suốt tối nhẹ */
+        }
+
+        .winner-table-container table {
+            width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng container */
+        }
+
+        .winner-table-container th {
+            position: sticky; /* Giữ cố định khi cuộn */
+            top: 0; /* Đặt vị trí cố định tại phần trên */
+            z-index: 1; /* Đảm bảo tiêu đề luôn ở trên các nội dung khác */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1></h1>
         <div class="lottery-container">
-            <div class="number" id="num1">0</div>
-            <div class="number" id="num2">0</div>
-            <div class="number" id="num3">0</div>
-            <div class="number" id="num4">0</div>
-            <div class="number" id="num5">0</div>
-            <div class="number" id="num6">0</div>
-            <div class="number" id="num7">0</div>
-            <div class="number" id="num8">0</div>
-            <div class="number" id="num9">0</div>
+            <div class="number"><img id="num1" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num2" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num3" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num4" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num5" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num6" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num7" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num8" src="img/hinh3.png" alt="?" /></div>
+            <div class="number"><img id="num9" src="img/hinh3.png" alt="?" /></div>
         </div>
 
         <div class="button">
@@ -142,16 +176,18 @@
         <div class="winners">
             <h2>Số lần đã quay: <span id="spinCount">0</span></h2>
             <h3>Danh sách nhân viên đã trúng:</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã Nhân Viên</th>
-                        <th>Tên Nhân Viên</th>
-                    </tr>
-                </thead>
-                <tbody id="winnerList"></tbody>
-            </table>
+            <div class="winner-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã Nhân Viên</th>
+                            <th>Tên Nhân Viên</th>
+                        </tr>
+                    </thead>
+                    <tbody id="winnerList"></tbody>
+                </table>
+            </div>
         </div>
 
         <canvas class="fireworks" id="fireworks"></canvas>
@@ -318,7 +354,8 @@
                     const randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
 
                     for (let i = 0; i < 9; i++) {
-                        document.getElementById(`num${i + 1}`).textContent = randomCode.charAt(i);
+                        const imgElement = document.getElementById(`num${i + 1}`);
+                        imgElement.src = `img/${randomCode.charAt(i)}.png`; // Cập nhật hình ảnh số
                     }
 
                     document.getElementById("result").textContent = `Đang quay...`;
@@ -336,7 +373,8 @@
 
                 const finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
                 for (let i = 0; i < 9; i++) {
-                    document.getElementById(`num${i + 1}`).textContent = finalCode.charAt(i);
+                    const imgElement = document.getElementById(`num${i + 1}`);
+                    imgElement.src = `img/${randomCode.charAt(i)}.png`; // Cập nhật hình ảnh số
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;

@@ -8,10 +8,10 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-image: url('img/hinh2.jpg'); /* Thay background-tet.jpg bằng tên file hình nền của bạn */
-            background-size: cover; /* Phủ toàn bộ màn hình */
-            background-position: center; /* Căn giữa hình nền */
-            background-attachment: fixed; /* Giữ hình nền cố định */
+            background-image: url('img/hinh2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
             text-align: center;
         }
@@ -23,19 +23,20 @@
         .lottery-container {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             margin: 20px 0;
         }
 
         .number {
-            font-size: 100px;
+            font-size: 50px;
             font-weight: bold;
-            margin: 0 10px;
+            margin: 5px;
             padding: 20px;
             background-color: white;
             color: #c62828;
             border-radius: 10px;
-            width: 120px;
-            height: 150px;
+            width: 80px;
+            height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -85,6 +86,10 @@
             <div class="number" id="num3">0</div>
             <div class="number" id="num4">0</div>
             <div class="number" id="num5">0</div>
+            <div class="number" id="num6">0</div>
+            <div class="number" id="num7">0</div>
+            <div class="number" id="num8">0</div>
+            <div class="number" id="num9">0</div>
         </div>
 
         <div class="button">
@@ -114,11 +119,19 @@
             const randomIndex = Math.floor(Math.random() * employees.length);
             const employee = employees[randomIndex];
 
-            document.getElementById("num1").textContent = employee["Mã nhân viên"].charAt(0);
-            document.getElementById("num2").textContent = employee["Mã nhân viên"].charAt(1);
-            document.getElementById("num3").textContent = employee["Mã nhân viên"].charAt(2);
-            document.getElementById("num4").textContent = employee["Mã nhân viên"].charAt(3);
-            document.getElementById("num5").textContent = employee["Mã nhân viên"].charAt(4);
+            // Lấy mã số nhân viên và đảm bảo độ dài 9 ký tự
+            let employeeCode = employee["Mã nhân viên"].padStart(9, '0');
+
+            // Hiển thị từng ký tự lên các ô
+            document.getElementById("num1").textContent = employeeCode.charAt(0);
+            document.getElementById("num2").textContent = employeeCode.charAt(1);
+            document.getElementById("num3").textContent = employeeCode.charAt(2);
+            document.getElementById("num4").textContent = employeeCode.charAt(3);
+            document.getElementById("num5").textContent = employeeCode.charAt(4);
+            document.getElementById("num6").textContent = employeeCode.charAt(5);
+            document.getElementById("num7").textContent = employeeCode.charAt(6);
+            document.getElementById("num8").textContent = employeeCode.charAt(7);
+            document.getElementById("num9").textContent = employeeCode.charAt(8);
 
             const result = document.getElementById("result");
             result.textContent = `Chúc mừng nhân viên: ${employee["Tên nhân viên"]}, mã số: ${employee["Mã nhân viên"]}`;

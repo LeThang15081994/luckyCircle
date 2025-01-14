@@ -90,6 +90,30 @@
             pointer-events: none;
             z-index: 9998;
         }
+
+        .winners {
+            margin-top: 20px;
+            color: white;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .winners table {
+            width: 100%;
+            color: white;
+            border-collapse: collapse;
+        }
+
+        .winners th, .winners td {
+            padding: 10px;
+            border: 1px solid white;
+        }
+
+        .winners th {
+            background-color: #c62828;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +136,22 @@
         </div>
 
         <div class="result" id="result">Chờ kết quả...</div>
+
+        <div class="winners">
+            <h2>Số lần đã quay: <span id="spinCount">0</span></h2>
+            <h3>Danh sách nhân viên đã trúng:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã Nhân Viên</th>
+                        <th>Tên Nhân Viên</th>
+                    </tr>
+                </thead>
+                <tbody id="winnerList"></tbody>
+            </table>
+        </div>
+
         <canvas class="fireworks" id="fireworks"></canvas>
         <canvas class="confetti" id="confetti"></canvas>
     </div>
@@ -120,6 +160,8 @@
         let employees = [];
         let animationRequest; // Track the animation request
         let intervalId; // Track the interval for creating fireworks/confetti
+        let spinCount = 0; // Track the number of spins
+        let winners = []; // Store the list of winners
 
         // Load danh sách nhân viên từ file JSON
         fetch('employees.json')
@@ -129,137 +171,26 @@
             })
             .catch(error => console.error('Lỗi khi tải danh sách nhân viên:', error));
 
-        function startEffects() {
-            const fireworksCanvas = document.getElementById("fireworks");
-            const confettiCanvas = document.getElementById("confetti");
-
-            const ctxFireworks = fireworksCanvas.getContext("2d");
-            const ctxConfetti = confettiCanvas.getContext("2d");
-
-            fireworksCanvas.width = confettiCanvas.width = window.innerWidth;
-            fireworksCanvas.height = confettiCanvas.height = window.innerHeight;
-
-            const particles = [];
-            const confetti = [];
-            const colors = ["#ff004c", "#ffa400", "#00d9ff", "#2bff00"];
-
-            class Particle {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.size = Math.random() * 20 + 10; // Larger fireworks size
-                    this.speedX = Math.random() * 10 - 5; // Faster fireworks
-                    this.speedY = Math.random() * 10 - 5;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    this.size *= 0.96; // Slightly slower shrink rate
-                }
-                draw() {
-                    ctxFireworks.fillStyle = this.color;
-                    ctxFireworks.beginPath();
-                    ctxFireworks.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctxFireworks.fill();
-                }
-            }
-
-            class ConfettiParticle {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.size = Math.random() * 15 + 5;
-                    this.speedX = Math.random() * 6 - 3;
-                    this.speedY = Math.random() * 4 + 2;
-                    this.rotation = Math.random() * 360;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    this.rotation += 5;
-                    if (this.y > window.innerHeight) {
-                        this.y = 0;
-                        this.x = Math.random() * window.innerWidth;
-                    }
-                }
-                draw() {
-                    ctxConfetti.save();
-                    ctxConfetti.translate(this.x, this.y);
-                    ctxConfetti.rotate((this.rotation * Math.PI) / 180);
-                    ctxConfetti.fillStyle = this.color;
-                    ctxConfetti.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
-                    ctxConfetti.restore();
-                }
-            }
-
-            function handleParticles() {
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                    if (particles[i].size <= 0.5) {
-                        particles.splice(i, 1);
-                        i--;
-                    }
-                }
-            }
-
-            function handleConfetti() {
-                for (let i = 0; i < confetti.length; i++) {
-                    confetti[i].update();
-                    confetti[i].draw();
-                }
-            }
-
-            function createFireworks(x, y) {
-                for (let i = 0; i < 150; i++) { // Increase number of particles per explosion
-                    particles.push(new Particle(x, y));
-                }
-            }
-
-            function createConfetti() {
-                for (let i = 0; i < 20; i++) { // Increase confetti density
-                    confetti.push(new ConfettiParticle(Math.random() * window.innerWidth, 0));
-                }
-            }
-
-            function animate() {
-                ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
-                ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-                handleParticles();
-                handleConfetti();
-                animationRequest = requestAnimationFrame(animate);
-            }
-
-            intervalId = setInterval(() => {
-                createFireworks(Math.random() * fireworksCanvas.width, Math.random() * fireworksCanvas.height);
-                createConfetti();
-            }, 500);
-
-            animate();
-        }
-
-        function stopEffects() {
-            cancelAnimationFrame(animationRequest);
-            clearInterval(intervalId);
-
-            const fireworksCanvas = document.getElementById("fireworks");
-            const ctxFireworks = fireworksCanvas.getContext("2d");
-            const confettiCanvas = document.getElementById("confetti");
-            const ctxConfetti = confettiCanvas.getContext("2d");
-
-            ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
-            ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        function updateWinnersTable() {
+            const winnerList = document.getElementById("winnerList");
+            winnerList.innerHTML = "";
+            winners.forEach((winner, index) => {
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${winner["Mã nhân viên"]}</td>
+                    <td>${winner["Tên nhân viên"]}</td>
+                </tr>`;
+                winnerList.innerHTML += row;
+            });
         }
 
         function spin() {
-            stopEffects(); // Stop effects when starting a new spin
-
             if (employees.length === 0) {
-                alert('Danh sách nhân viên chưa được tải.');
+                alert('Danh sách nhân viên chưa được tải hoặc đã hết nhân viên để quay.');
                 return;
             }
+
+            stopEffects(); // Stop effects when starting a new spin
 
             const duration = 5000; // 5 giây
             const interval = 100; // 0.1 giây mỗi lần đổi số
@@ -285,15 +216,22 @@
             const stopSpinning = () => {
                 clearInterval(timer);
                 let finalIndex = Math.floor(Math.random() * employees.length);
-                let finalEmployee = employees[finalIndex];
-                let finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
+                let finalEmployee = employees.splice(finalIndex, 1)[0]; // Remove the winner from the list
+
+                winners.push(finalEmployee); // Add winner to the winners list
+                spinCount++; // Increment spin count
 
                 // Hiển thị kết quả cuối cùng
+                let finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
                 for (let i = 0; i < 9; i++) {
                     document.getElementById(`num${i + 1}`).textContent = finalCode.charAt(i);
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+
+                // Cập nhật bảng danh sách trúng thưởng và số lần quay
+                document.getElementById("spinCount").textContent = spinCount;
+                updateWinnersTable();
 
                 // Bắt đầu hiệu ứng pháo hoa và pháo giấy
                 startEffects();
@@ -301,6 +239,19 @@
 
             startSpinning();
             setTimeout(stopSpinning, duration);
+        }
+
+        function stopEffects() {
+            cancelAnimationFrame(animationRequest);
+            clearInterval(intervalId);
+
+            const fireworksCanvas = document.getElementById("fireworks");
+            const ctxFireworks = fireworksCanvas.getContext("2d");
+            const confettiCanvas = document.getElementById("confetti");
+            const ctxConfetti = confettiCanvas.getContext("2d");
+
+            ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+            ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
         }
     </script>
 </body>

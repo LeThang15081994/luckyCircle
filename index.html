@@ -349,13 +349,17 @@
 
             const startSpinning = () => {
                 timer = setInterval(() => {
+                    const randomIndex = Math.floor(Math.random() * employees.length);
+                    const randomEmployee = employees[randomIndex];
+                    const randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
+
                     for (let i = 0; i < 9; i++) {
-                        const randomDigit = Math.floor(Math.random() * 10); // Tạo số ngẫu nhiên từ 0-9
                         const imgElement = document.getElementById(`num${i + 1}`);
-                        imgElement.src = `img/${randomDigit}.png`; // Cập nhật hình ảnh số ngẫu nhiên
+                        imgElement.src = `img/${randomCode.charAt(i)}.png`; // Cập nhật hình ảnh số
                     }
-                    document.getElementById("result").textContent = `Đang quay...`; // Hiển thị trạng thái
-                }, interval); // Cập nhật mỗi 100ms
+
+                    document.getElementById("result").textContent = `Đang quay...`;
+                }, interval);
             };
 
             const stopSpinning = () => {

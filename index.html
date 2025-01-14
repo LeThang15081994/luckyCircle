@@ -211,7 +211,7 @@
                 constructor(x, y) {
                     this.x = x;
                     this.y = y;
-                    this.size = Math.random() * 10 + 5;
+                    this.size = Math.random() * 10 + 5; // Kích thước hình vuông
                     this.speedX = Math.random() * 2 - 1;
                     this.speedY = Math.random() * 3 + 2;
                     this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -219,10 +219,14 @@
                 update() {
                     this.x += this.speedX;
                     this.y += this.speedY;
+                    if (this.y > confettiCanvas.height) {
+                        this.y = 0; // Đặt lại vị trí khi rơi hết màn hình
+                        this.x = Math.random() * confettiCanvas.width;
+                    }
                 }
                 draw() {
                     ctxConfetti.fillStyle = this.color;
-                    ctxConfetti.fillRect(this.x, this.y, this.size, this.size / 2);
+                    ctxConfetti.fillRect(this.x, this.y, this.size, this.size); // Vẽ pháo giấy hình vuông
                 }
             }
 
@@ -233,7 +237,7 @@
             }
 
             function createConfetti() {
-                for (let i = 0; i < 500; i++) {
+                for (let i = 0; i < 100; i++) {
                     confetti.push(new ConfettiParticle(Math.random() * confettiCanvas.width, 0));
                 }
             }
@@ -265,11 +269,12 @@
                 animationRequest = requestAnimationFrame(animate);
             }
 
-            createConfetti();
+            
             animate();
 
             intervalId = setInterval(() => {
                 createFireworks(Math.random() * fireworksCanvas.width, Math.random() * fireworksCanvas.height);
+                createConfetti();
             }, 500);
         }
 

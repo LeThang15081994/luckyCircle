@@ -112,23 +112,38 @@
             const num5 = document.getElementById("num5");
             const result = document.getElementById("result");
 
-            // Random số cho từng ô
-            const number1 = Math.floor(Math.random() * 10);
-            const number2 = Math.floor(Math.random() * 10);
-            const number3 = Math.floor(Math.random() * 10);
-            const number4 = Math.floor(Math.random() * 10);
-            const number5 = Math.floor(Math.random() * 10);
+            let counter = 0;
+            const duration = 2000; // Thời gian quay (2 giây)
+            const interval = 100; // Khoảng thời gian giữa mỗi lần thay đổi số
 
-            num1.textContent = number1;
-            num2.textContent = number2;
-            num3.textContent = number3;
-            num4.textContent = number4;
-            num5.textContent = number5;
+            // Random số liên tục
+            const timer = setInterval(() => {
+                num1.textContent = Math.floor(Math.random() * 10);
+                num2.textContent = Math.floor(Math.random() * 10);
+                num3.textContent = Math.floor(Math.random() * 10);
+                num4.textContent = Math.floor(Math.random() * 10);
+                num5.textContent = Math.floor(Math.random() * 10);
+                counter += interval;
 
-            const maSo = `${number1}${number2}${number3}${number4}${number5}`;
+                // Khi hết thời gian, dừng quay và hiển thị kết quả
+                if (counter >= duration) {
+                    clearInterval(timer);
+                    const number1 = Math.floor(Math.random() * 10);
+                    const number2 = Math.floor(Math.random() * 10);
+                    const number3 = Math.floor(Math.random() * 10);
+                    const number4 = Math.floor(Math.random() * 10);
+                    const number5 = Math.floor(Math.random() * 10);
 
-            // Hiển thị kết quả
-            result.textContent = `Chúc mừng Quý Khách Nguyễn Thị Sinh \n Có mã số ${maSo} đã trúng thưởng`;
+                    num1.textContent = number1;
+                    num2.textContent = number2;
+                    num3.textContent = number3;
+                    num4.textContent = number4;
+                    num5.textContent = number5;
+
+                    const maSo = `${number1}${number2}${number3}${number4}${number5}`;
+                    result.textContent = `Chúc mừng Quý Khách Nguyễn Thị Sinh\nCó mã số ${maSo} đã trúng thưởng!`;
+                }
+            }, interval);
         }
     </script>
 </body>

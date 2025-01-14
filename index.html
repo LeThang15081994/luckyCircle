@@ -87,15 +87,6 @@
             <div class="number" id="num5">0</div>
         </div>
 
-        <div class="lan-chon">
-            <label for="round">Lần:</label>
-            <select id="round">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </select>
-        </div>
-
         <div class="button">
             <button onclick="spin()">QUAY</button>
         </div>
@@ -104,46 +95,33 @@
     </div>
 
     <script>
+        let employees = [];
+
+        // Load danh sách nhân viên từ file JSON
+        fetch('employees.json')
+            .then(response => response.json())
+            .then(data => {
+                employees = data;
+            })
+            .catch(error => console.error('Lỗi khi tải danh sách nhân viên:', error));
+
+        // Hàm quay số
         function spin() {
-            const num1 = document.getElementById("num1");
-            const num2 = document.getElementById("num2");
-            const num3 = document.getElementById("num3");
-            const num4 = document.getElementById("num4");
-            const num5 = document.getElementById("num5");
+            if (employees.length === 0) {
+                alert('Danh sách nhân viên chưa được tải.');
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * employees.length);
+            const employee = employees[randomIndex];
+
+            document.getElementById("num1").textContent = employee["Mã nhân viên"].charAt(0);
+            document.getElementById("num2").textContent = employee["Mã nhân viên"].charAt(1);
+            document.getElementById("num3").textContent = employee["Mã nhân viên"].charAt(2);
+            document.getElementById("num4").textContent = employee["Mã nhân viên"].charAt(3);
+            document.getElementById("num5").textContent = employee["Mã nhân viên"].charAt(4);
+
             const result = document.getElementById("result");
-
-            let counter = 0;
-            const duration = 2000; // Thời gian quay (2 giây)
-            const interval = 100; // Khoảng thời gian giữa mỗi lần thay đổi số
-
-            // Random số liên tục
-            const timer = setInterval(() => {
-                num1.textContent = Math.floor(Math.random() * 10);
-                num2.textContent = Math.floor(Math.random() * 10);
-                num3.textContent = Math.floor(Math.random() * 10);
-                num4.textContent = Math.floor(Math.random() * 10);
-                num5.textContent = Math.floor(Math.random() * 10);
-                counter += interval;
-
-                // Khi hết thời gian, dừng quay và hiển thị kết quả
-                if (counter >= duration) {
-                    clearInterval(timer);
-                    const number1 = Math.floor(Math.random() * 10);
-                    const number2 = Math.floor(Math.random() * 10);
-                    const number3 = Math.floor(Math.random() * 10);
-                    const number4 = Math.floor(Math.random() * 10);
-                    const number5 = Math.floor(Math.random() * 10);
-
-                    num1.textContent = number1;
-                    num2.textContent = number2;
-                    num3.textContent = number3;
-                    num4.textContent = number4;
-                    num5.textContent = number5;
-
-                    const maSo = `${number1}${number2}${number3}${number4}${number5}`;
-                    result.textContent = `Chúc mừng Quý Khách Nguyễn Thị Sinh\nCó mã số ${maSo} đã trúng thưởng!`;
-                }
-            }, interval);
+            result.textContent = `Chúc mừng nhân viên: ${employee["Tên nhân viên"]}, mã số: ${employee["Mã nhân viên"]}`;
         }
     </script>
 </body>

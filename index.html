@@ -70,6 +70,26 @@
             padding: 10px 20px;
             border-radius: 5px;
         }
+
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
     </style>
 </head>
 <body>
@@ -92,6 +112,8 @@
         </div>
 
         <div class="result" id="result">Chờ kết quả...</div>
+        <canvas class="fireworks" id="fireworks"></canvas>
+        <canvas class="confetti" id="confetti"></canvas>
     </div>
 
     <script>
@@ -104,6 +126,117 @@
                 employees = data;
             })
             .catch(error => console.error('Lỗi khi tải danh sách nhân viên:', error));
+
+        function startFireworksAndConfetti() {
+            const fireworksCanvas = document.getElementById("fireworks");
+            const confettiCanvas = document.getElementById("confetti");
+
+            const ctxFireworks = fireworksCanvas.getContext("2d");
+            const ctxConfetti = confettiCanvas.getContext("2d");
+
+            fireworksCanvas.width = confettiCanvas.width = window.innerWidth;
+            fireworksCanvas.height = confettiCanvas.height = window.innerHeight;
+
+            const particles = [];
+            const confetti = [];
+            const colors = ["#ff004c", "#ffa400", "#00d9ff", "#2bff00"];
+
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 5 + 1;
+                    this.speedX = Math.random() * 3 - 1.5;
+                    this.speedY = Math.random() * 3 - 1.5;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.size *= 0.95;
+                }
+                draw() {
+                    ctxFireworks.fillStyle = this.color;
+                    ctxFireworks.beginPath();
+                    ctxFireworks.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctxFireworks.fill();
+                }
+            }
+
+            class ConfettiParticle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 10 + 5;
+                    this.speedX = Math.random() * 4 - 2;
+                    this.speedY = Math.random() * 3 + 1;
+                    this.rotation = Math.random() * 360;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.rotation += 5;
+                    if (this.y > window.innerHeight) {
+                        this.y = 0;
+                        this.x = Math.random() * window.innerWidth;
+                    }
+                }
+                draw() {
+                    ctxConfetti.save();
+                    ctxConfetti.translate(this.x, this.y);
+                    ctxConfetti.rotate((this.rotation * Math.PI) / 180);
+                    ctxConfetti.fillStyle = this.color;
+                    ctxConfetti.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctxConfetti.restore();
+                }
+            }
+
+            function handleParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].size <= 0.5) {
+                        particles.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
+            function handleConfetti() {
+                for (let i = 0; i < confetti.length; i++) {
+                    confetti[i].update();
+                    confetti[i].draw();
+                }
+            }
+
+            function createFireworks(x, y) {
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            }
+
+            function createConfetti() {
+                for (let i = 0; i < 10; i++) {
+                    confetti.push(new ConfettiParticle(Math.random() * window.innerWidth, 0));
+                }
+            }
+
+            function animate() {
+                ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+                ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                handleParticles();
+                handleConfetti();
+                requestAnimationFrame(animate);
+            }
+
+            setInterval(() => {
+                createFireworks(Math.random() * fireworksCanvas.width, Math.random() * fireworksCanvas.height);
+                createConfetti();
+            }, 500);
+
+            animate();
+        }
 
         function spin() {
             if (employees.length === 0) {
@@ -144,6 +277,9 @@
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+
+                // Bắt đầu hiệu ứng pháo hoa và pháo giấy
+                startFireworksAndConfetti();
             };
 
             startSpinning();

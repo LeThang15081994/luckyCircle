@@ -349,37 +349,32 @@
 
             const startSpinning = () => {
                 timer = setInterval(() => {
-                    const randomIndex = Math.floor(Math.random() * employees.length);
-                    const randomEmployee = employees[randomIndex];
-                    const randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
-
                     for (let i = 0; i < 9; i++) {
+                        const randomDigit = Math.floor(Math.random() * 10); // Số ngẫu nhiên từ 0-9
                         const imgElement = document.getElementById(`num${i + 1}`);
-                        imgElement.src = `img/${randomCode.charAt(i)}.png`; // Cập nhật hình ảnh số
+                        imgElement.src = `img/${randomDigit}.png`; // Cập nhật hình ảnh số ngẫu nhiên
                     }
 
-                    document.getElementById("result").textContent = `Đang quay...`;
-                }, interval);
+                    document.getElementById("result").textContent = `Đang quay...`; // Hiển thị trạng thái
+                }, interval); // Cập nhật số ngẫu nhiên sau mỗi khoảng thời gian
             };
 
             const stopSpinning = () => {
-                clearInterval(timer);
+                clearInterval(timer); // Dừng việc cập nhật số ngẫu nhiên
 
                 const finalIndex = Math.floor(Math.random() * employees.length);
-                const finalEmployee = employees.splice(finalIndex, 1)[0];
+                const finalEmployee = employees.splice(finalIndex, 1)[0]; // Loại bỏ nhân viên đã trúng
+                const finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0'); // Đảm bảo mã có 9 ký tự
 
-                winners.push(finalEmployee);
-                spinCount++;
-
-                const finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
                 for (let i = 0; i < 9; i++) {
                     const imgElement = document.getElementById(`num${i + 1}`);
-                    imgElement.src = `img/${randomCode.charAt(i)}.png`; // Cập nhật hình ảnh số
+                    imgElement.src = `img/${finalCode.charAt(i)}.png`; // Cập nhật hình ảnh số kết quả cuối cùng
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
                 document.getElementById("spinCount").textContent = spinCount;
 
+                // Cập nhật bảng danh sách người trúng
                 const winnerList = document.getElementById("winnerList");
                 const row = `<tr>
                     <td>${spinCount}</td>
@@ -390,7 +385,7 @@
 
                 startEffects(); // Bắt đầu hiệu ứng pháo hoa và pháo giấy
             };
-
+            spinCount++; 
             startSpinning();
             setTimeout(stopSpinning, duration);
         }

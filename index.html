@@ -60,6 +60,10 @@
             }
         }
 
+        .bounce {
+            animation: bounce 0.3s ease-in-out infinite; /* Hiệu ứng nhảy liên tục */
+        }
+
         .button {
             margin-top: 20px;
         }
@@ -353,6 +357,7 @@
                         const randomDigit = Math.floor(Math.random() * 10); // Số ngẫu nhiên từ 0-9
                         const imgElement = document.getElementById(`num${i + 1}`);
                         imgElement.src = `img/${randomDigit}.png`; // Cập nhật hình ảnh số ngẫu nhiên
+                        imgElement.parentElement.classList.remove("bounce"); // Đảm bảo không có hiệu ứng khi quay
                     }
 
                     document.getElementById("result").textContent = `Đang quay...`; // Hiển thị trạng thái
@@ -369,6 +374,10 @@
                 for (let i = 0; i < 9; i++) {
                     const imgElement = document.getElementById(`num${i + 1}`);
                     imgElement.src = `img/${finalCode.charAt(i)}.png`; // Cập nhật hình ảnh số kết quả cuối cùng
+
+                    // Thêm hiệu ứng nhảy liên tục
+                    const parentElement = imgElement.parentElement;
+                    parentElement.classList.add("bounce");
                 }
 
                 document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;

@@ -189,7 +189,7 @@
                 constructor(x, y) {
                     this.x = x;
                     this.y = y;
-                    this.size = Math.random() * 5 + 2; // Firework size
+                    this.size = Math.random() * 8 + 2; // Firework size
                     this.speedX = Math.random() * 3 - 1.5;
                     this.speedY = Math.random() * 3 - 1.5;
                     this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -197,7 +197,7 @@
                 update() {
                     this.x += this.speedX;
                     this.y += this.speedY;
-                    this.size *= 0.95;
+                    this.size *= 0.98;
                 }
                 draw() {
                     ctxFireworks.fillStyle = this.color;
@@ -237,7 +237,7 @@
             }
 
             function createConfetti() {
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 20; i++) {
                     confetti.push(new ConfettiParticle(Math.random() * confettiCanvas.width, 0));
                 }
             }
@@ -275,7 +275,7 @@
             intervalId = setInterval(() => {
                 createFireworks(Math.random() * fireworksCanvas.width, Math.random() * fireworksCanvas.height);
                 createConfetti();
-            }, 500);
+            }, 1000);
         }
 
         function stopEffects() {

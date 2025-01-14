@@ -171,74 +171,106 @@
             })
             .catch(error => console.error('Lỗi khi tải danh sách nhân viên:', error));
 
-        function updateWinnersTable() {
-            const winnerList = document.getElementById("winnerList");
-            winnerList.innerHTML = "";
-            winners.forEach((winner, index) => {
-                const row = `<tr>
-                    <td>${index + 1}</td>
-                    <td>${winner["Mã nhân viên"]}</td>
-                    <td>${winner["Tên nhân viên"]}</td>
-                </tr>`;
-                winnerList.innerHTML += row;
-            });
-        }
+        function startEffects() {
+            const fireworksCanvas = document.getElementById("fireworks");
+            const confettiCanvas = document.getElementById("confetti");
 
-        function spin() {
-            if (employees.length === 0) {
-                alert('Danh sách nhân viên chưa được tải hoặc đã hết nhân viên để quay.');
-                return;
+            const ctxFireworks = fireworksCanvas.getContext("2d");
+            const ctxConfetti = confettiCanvas.getContext("2d");
+
+            fireworksCanvas.width = confettiCanvas.width = window.innerWidth;
+            fireworksCanvas.height = confettiCanvas.height = window.innerHeight;
+
+            const particles = [];
+            const confetti = [];
+            const colors = ["#ff004c", "#ffa400", "#00d9ff", "#2bff00"];
+
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 5 + 2; // Firework size
+                    this.speedX = Math.random() * 3 - 1.5;
+                    this.speedY = Math.random() * 3 - 1.5;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.size *= 0.95;
+                }
+                draw() {
+                    ctxFireworks.fillStyle = this.color;
+                    ctxFireworks.beginPath();
+                    ctxFireworks.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctxFireworks.fill();
+                }
             }
 
-            stopEffects(); // Stop effects when starting a new spin
+            class ConfettiParticle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 10 + 5;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.speedY = Math.random() * 3 + 2;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                }
+                draw() {
+                    ctxConfetti.fillStyle = this.color;
+                    ctxConfetti.fillRect(this.x, this.y, this.size, this.size / 2);
+                }
+            }
 
-            const duration = 5000; // 5 giây
-            const interval = 100; // 0.1 giây mỗi lần đổi số
-            let timer;
+            function createFireworks(x, y) {
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            }
 
-            // Random số liên tục
-            const startSpinning = () => {
-                timer = setInterval(() => {
-                    let randomIndex = Math.floor(Math.random() * employees.length);
-                    let randomEmployee = employees[randomIndex];
-                    let randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
+            function createConfetti() {
+                for (let i = 0; i < 100; i++) {
+                    confetti.push(new ConfettiParticle(Math.random() * confettiCanvas.width, 0));
+                }
+            }
 
-                    // Hiển thị từng ký tự lên các ô
-                    for (let i = 0; i < 9; i++) {
-                        document.getElementById(`num${i + 1}`).textContent = randomCode.charAt(i);
+            function animate() {
+                ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+                ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    if (particles[i].size < 0.5) {
+                        particles.splice(i, 1);
+                        i--;
                     }
-
-                    document.getElementById("result").textContent = `Đang quay...`;
-                }, interval);
-            };
-
-            // Dừng quay và chọn kết quả
-            const stopSpinning = () => {
-                clearInterval(timer);
-                let finalIndex = Math.floor(Math.random() * employees.length);
-                let finalEmployee = employees.splice(finalIndex, 1)[0]; // Remove the winner from the list
-
-                winners.push(finalEmployee); // Add winner to the winners list
-                spinCount++; // Increment spin count
-
-                // Hiển thị kết quả cuối cùng
-                let finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
-                for (let i = 0; i < 9; i++) {
-                    document.getElementById(`num${i + 1}`).textContent = finalCode.charAt(i);
                 }
 
-                document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+                for (let i = 0; i < confetti.length; i++) {
+                    confetti[i].update();
+                    confetti[i].draw();
 
-                // Cập nhật bảng danh sách trúng thưởng và số lần quay
-                document.getElementById("spinCount").textContent = spinCount;
-                updateWinnersTable();
+                    if (confetti[i].y > confettiCanvas.height) {
+                        confetti.splice(i, 1);
+                        i--;
+                    }
+                }
 
-                // Bắt đầu hiệu ứng pháo hoa và pháo giấy
-                startEffects();
-            };
+                animationRequest = requestAnimationFrame(animate);
+            }
 
-            startSpinning();
-            setTimeout(stopSpinning, duration);
+            createConfetti();
+            animate();
+
+            intervalId = setInterval(() => {
+                createFireworks(Math.random() * fireworksCanvas.width, Math.random() * fireworksCanvas.height);
+            }, 500);
         }
 
         function stopEffects() {
@@ -252,6 +284,64 @@
 
             ctxFireworks.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
             ctxConfetti.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+
+        function spin() {
+            if (employees.length === 0) {
+                alert('Danh sách nhân viên chưa được tải hoặc đã hết nhân viên để quay.');
+                return;
+            }
+
+            stopEffects(); // Dừng hiệu ứng khi quay mới bắt đầu
+
+            const duration = 5000; // 5 giây
+            const interval = 100; // 0.1 giây mỗi lần đổi số
+            let timer;
+
+            const startSpinning = () => {
+                timer = setInterval(() => {
+                    const randomIndex = Math.floor(Math.random() * employees.length);
+                    const randomEmployee = employees[randomIndex];
+                    const randomCode = randomEmployee["Mã nhân viên"].padStart(9, '0');
+
+                    for (let i = 0; i < 9; i++) {
+                        document.getElementById(`num${i + 1}`).textContent = randomCode.charAt(i);
+                    }
+
+                    document.getElementById("result").textContent = `Đang quay...`;
+                }, interval);
+            };
+
+            const stopSpinning = () => {
+                clearInterval(timer);
+
+                const finalIndex = Math.floor(Math.random() * employees.length);
+                const finalEmployee = employees.splice(finalIndex, 1)[0];
+
+                winners.push(finalEmployee);
+                spinCount++;
+
+                const finalCode = finalEmployee["Mã nhân viên"].padStart(9, '0');
+                for (let i = 0; i < 9; i++) {
+                    document.getElementById(`num${i + 1}`).textContent = finalCode.charAt(i);
+                }
+
+                document.getElementById("result").textContent = `Chúc mừng nhân viên: ${finalEmployee["Tên nhân viên"]}, mã số: ${finalEmployee["Mã nhân viên"]}`;
+                document.getElementById("spinCount").textContent = spinCount;
+
+                const winnerList = document.getElementById("winnerList");
+                const row = `<tr>
+                    <td>${spinCount}</td>
+                    <td>${finalEmployee["Mã nhân viên"]}</td>
+                    <td>${finalEmployee["Tên nhân viên"]}</td>
+                </tr>`;
+                winnerList.innerHTML += row;
+
+                startEffects(); // Bắt đầu hiệu ứng pháo hoa và pháo giấy
+            };
+
+            startSpinning();
+            setTimeout(stopSpinning, duration);
         }
     </script>
 </body>
